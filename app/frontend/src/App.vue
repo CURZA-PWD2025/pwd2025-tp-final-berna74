@@ -4,19 +4,16 @@
       <img src="../public/images/logo.svg" alt="Logo" class="logo" />
     </a>
     
-    <!-- Botón hamburguesa para móviles -->
     <button class="menu-toggle" @click="toggleMenu" :aria-label="menuOpen ? 'Cerrar menú' : 'Abrir menú'">
       <Icon :icon="menuOpen ? 'mdi:close' : 'mdi:menu'" width="28" height="28" />
     </button>
 
-    <!-- Enlaces de navegación -->
     <div class="nav-links" :class="{ 'nav-links-open': menuOpen }">
       <RouterLink :to="{ name: 'home' }" @click="closeMenu"></RouterLink>
       <RouterLink :to="{ name: 'socios' }" @click="closeMenu">Socios</RouterLink>
       <RouterLink :to="{ name: 'alumnos' }" @click="closeMenu">Alumnos</RouterLink>
       <RouterLink :to="{ name: 'turnos' }" @click="closeMenu">Turnos</RouterLink>
       <RouterLink :to="{ name: 'profesores' }" @click="closeMenu">Profesores</RouterLink>
-      <RouterLink :to="{ name: 'categorias_list' }" @click="closeMenu">Categorías</RouterLink>
       <RouterLink :to="{ name: 'pagos' }" @click="closeMenu">Pagos</RouterLink>
       <RouterLink :to="{ name: 'pelotitas' }" @click="closeMenu">Pelotitas</RouterLink>
       

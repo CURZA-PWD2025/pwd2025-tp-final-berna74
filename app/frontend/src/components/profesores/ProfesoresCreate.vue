@@ -14,8 +14,8 @@
         </div>
 
         <div class="form-group">
-          <label for="especialidad">Especialidad:</label>
-          <input v-model="form.especialidad" type="text" id="especialidad" required />
+          <label for="horarios_clases">Horarios de clases:</label>
+          <input v-model="form.horarios_clases" type="text" id="horarios_clases" placeholder="Ej: Lunes y Miércoles 10-12hs" required />
         </div>
 
         <div class="form-group">
@@ -47,7 +47,7 @@ const profesoresStore = useProfesoresStore()
 const form = ref({
   nombre: '',
   apellido: '',
-  especialidad: '',
+  horarios_clases: '',
   telefono: '',
   email: ''
 })

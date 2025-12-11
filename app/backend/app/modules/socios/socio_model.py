@@ -5,7 +5,7 @@ from app.modules.profesor.profesor_model import ProfesorModel
 class SocioModel:
     def __init__(self, id: int = 0, nombre: str = "", apellido: str = "", dni: str = "", 
                  email: str = "", telefono: str = "", fecha_inscripcion: str = "",
-                 profesor: object = ProfesorModel, categorias: list = []):
+                 profesor: object = ProfesorModel, categorias: list = [], registra_deuda: bool = False):
         self.id = id
         self.nombre = nombre
         self.apellido = apellido
@@ -15,6 +15,7 @@ class SocioModel:
         self.fecha_inscripcion = fecha_inscripcion
         self.profesor = profesor
         self.categorias = categorias  # Lista de CategoriaModel
+        self.registra_deuda = registra_deuda
 
     def serializar(self) -> dict:
         return {
@@ -25,8 +26,9 @@ class SocioModel:
             'email': self.email,
             'telefono': self.telefono,
             'fecha_inscripcion': self.fecha_inscripcion,
-            'profesor': self.profesor.serializar(),
-            'categorias': [categoria.serializar() for categoria in self.categorias]
+            'profesor': self.profesor.serializar() if self.profesor else None,
+            'categorias': [categoria.serializar() for categoria in self.categorias],
+            'registra_deuda': self.registra_deuda
         }
 
     @staticmethod
@@ -40,7 +42,8 @@ class SocioModel:
             telefono=data['telefono'],
             fecha_inscripcion=data['fecha_inscripcion'],
             profesor=ProfesorModel.deserializar(data['profesor']),
-            categorias=[CategoriaModel.deserializar(c) for c in data['categorias']]
+            categorias=[CategoriaModel.deserializar(c) for c in data['categorias']],
+            registra_deuda=data.get('registra_deuda', False)
         )
 
     @staticmethod
@@ -55,10 +58,13 @@ class SocioModel:
                 rows = cursor.fetchall()
                 socios = []
                 for row in rows:
-                    # Obtengo el profesor
-                    cursor.execute("SELECT * FROM PROFESORES WHERE id = %s", (row['profesor_id'],))
-                    profesor_row = cursor.fetchone()
-                    profesor = ProfesorModel.deserializar(profesor_row)
+                    # Obtengo el profesor si existe
+                    profesor = None
+                    if row['profesor_id']:
+                        cursor.execute("SELECT * FROM PROFESORES WHERE id = %s", (row['profesor_id'],))
+                        profesor_row = cursor.fetchone()
+                        if profesor_row:
+                            profesor = ProfesorModel.deserializar(profesor_row)
                     
                     # Obtengo las categorías del socio
                     cursor.execute("""
@@ -78,7 +84,8 @@ class SocioModel:
                         telefono=row['telefono'],
                         fecha_inscripcion=str(row['fecha_inscripcion']),
                         profesor=profesor,
-                        categorias=categorias
+                        categorias=categorias,
+                        registra_deuda=bool(row.get('registra_deuda', False))
                     )
                     socios.append(socio.serializar())
                 return socios
@@ -99,10 +106,13 @@ class SocioModel:
                 if not row:
                     return None
                 
-                # Obtengo el profesor
-                cursor.execute("SELECT * FROM PROFESORES WHERE id = %s", (row['profesor_id'],))
-                profesor_row = cursor.fetchone()
-                profesor = ProfesorModel.deserializar(profesor_row)
+                # Obtengo el profesor si existe
+                profesor = None
+                if row['profesor_id']:
+                    cursor.execute("SELECT * FROM PROFESORES WHERE id = %s", (row['profesor_id'],))
+                    profesor_row = cursor.fetchone()
+                    if profesor_row:
+                        profesor = ProfesorModel.deserializar(profesor_row)
                 
                 # Obtengo las categorías del socio
                 cursor.execute("""
@@ -122,7 +132,8 @@ class SocioModel:
                     telefono=row['telefono'],
                     fecha_inscripcion=str(row['fecha_inscripcion']),
                     profesor=profesor,
-                    categorias=categorias
+                    categorias=categorias,
+                    registra_deuda=bool(row.get('registra_deuda', False))
                 )
                 return socio.serializar()
         except Exception as exc:
@@ -138,11 +149,11 @@ class SocioModel:
         try:
             with cnx.cursor() as cursor:
                 cursor.execute("""
-                    INSERT INTO SOCIOS (nombre, apellido, dni, email, telefono, fecha_inscripcion, profesor_id)
-                    VALUES (%s, %s, %s, %s, %s, %s, %s)
+                    INSERT INTO SOCIOS (nombre, apellido, dni, email, telefono, fecha_inscripcion, profesor_id, registra_deuda)
+                    VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
                 """, (socio_data['nombre'], socio_data['apellido'], socio_data['dni'], 
                       socio_data['email'], socio_data['telefono'], socio_data['fecha_inscripcion'],
-                      socio_data['profesor_id']))
+                      socio_data['profesor_id'], socio_data.get('registra_deuda', False)))
                 
                 socio_id = cursor.lastrowid
                 
@@ -172,11 +183,11 @@ class SocioModel:
                 cursor.execute("""
                     UPDATE SOCIOS 
                     SET nombre = %s, apellido = %s, dni = %s, email = %s, telefono = %s, 
-                        fecha_inscripcion = %s, profesor_id = %s
+                        fecha_inscripcion = %s, profesor_id = %s, registra_deuda = %s
                     WHERE id = %s
                 """, (socio_data['nombre'], socio_data['apellido'], socio_data['dni'],
                       socio_data['email'], socio_data['telefono'], socio_data['fecha_inscripcion'],
-                      socio_data['profesor_id'], id))
+                      socio_data['profesor_id'], socio_data.get('registra_deuda', False), id))
                 
                 # Actualizar categorías
                 cursor.execute("DELETE FROM SOCIO_CATEGORIA WHERE socio_id = %s", (id,))

@@ -2,7 +2,10 @@
   <div class="pagos-list">
     <div class="list-header">
       <h2>Registro de Pagos</h2>
-      <button @click="$emit('create')" class="btn-create">+ Registrar Pago</button>
+      <button @click="$emit('create')" class="btn-create">
+        <Icon icon="mdi:plus" width="20" height="20" />
+        Registrar Pago
+      </button>
     </div>
     
     <div v-if="loading" class="loading">Cargando pagos...</div>
@@ -41,9 +44,15 @@
             <td>{{ pago.metodo_pago || '-' }}</td>
             <td class="observaciones">{{ pago.observaciones || '-' }}</td>
             <td class="actions">
-              <button @click="$emit('show', pago.id)" class="btn-show">Ver</button>
-              <button @click="$emit('edit', pago.id)" class="btn-edit">Editar</button>
-              <button @click="handleDelete(pago.id)" class="btn-delete">Eliminar</button>
+              <button @click="$emit('show', pago.id)" class="btn-icon" title="Ver">
+                <Icon icon="mdi:eye" width="18" height="18" />
+              </button>
+              <button @click="$emit('edit', pago.id)" class="btn-icon" title="Editar">
+                <Icon icon="mdi:pencil" width="18" height="18" />
+              </button>
+              <button @click="handleDelete(pago.id)" class="btn-icon btn-delete" title="Eliminar">
+                <Icon icon="mdi:delete" width="18" height="18" />
+              </button>
             </td>
           </tr>
         </tbody>
@@ -54,6 +63,7 @@
 
 <script setup lang="ts">
 import { onMounted } from 'vue'
+import { Icon } from '@iconify/vue'
 import { usePagosStore } from '@/stores/pagos'
 import { storeToRefs } from 'pinia'
 import type { Pago } from '@/interfaces/Pago'
@@ -132,17 +142,23 @@ h2 {
 }
 
 .btn-create {
-  background-color: #022F9D;
+  background: #00CDFF;
   color: white;
-  padding: 10px 20px;
   border: none;
-  border-radius: 4px;
+  padding: 0.75rem 1.5rem;
+  border-radius: 6px;
   cursor: pointer;
-  font-size: 14px;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  transition: all 0.3s ease;
 }
 
 .btn-create:hover {
-  background-color: #00CDFF;
+  background: #00B8E6;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 205, 255, 0.3);
 }
 
 .table-container {
@@ -223,42 +239,28 @@ tbody tr:hover {
 
 .actions {
   display: flex;
-  gap: 5px;
+  gap: 0.5rem;
+  justify-content: center;
 }
 
-.btn-show, .btn-edit, .btn-delete {
-  padding: 6px 12px;
+.btn-icon {
+  background: none;
   border: none;
-  border-radius: 4px;
+  padding: 0.5rem;
   cursor: pointer;
-  font-size: 12px;
+  color: #022F9D;
+  border-radius: 4px;
+  transition: all 0.3s ease;
 }
 
-.btn-show {
-  background-color: #00CDFF;
-  color: white;
-}
-
-.btn-show:hover {
-  background-color: #00a0cc;
-}
-
-.btn-edit {
-  background-color: #FFCD00;
-  color: #000000;
-}
-
-.btn-edit:hover {
-  background-color: #ccaa00;
-}
-
-.btn-delete {
-  background-color: #dc3545;
-  color: white;
+.btn-icon:hover {
+  background: #e3f0fc;
+  color: #00CDFF;
 }
 
 .btn-delete:hover {
-  background-color: #c82333;
+  background: #ffebee;
+  color: #c62828;
 }
 
 .loading, .error, .empty {

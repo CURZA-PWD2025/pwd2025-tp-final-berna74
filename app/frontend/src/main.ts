@@ -24,9 +24,8 @@ import {
   FaUserCheck,
   FaLayerGroup,
   FaCreditCard
-} from "oh-vue-icons/icons";
+} from 'oh-vue-icons/icons'
 
-// Agrega los íconos seleccionados
 addIcons(
   FaDesktop, 
   FaTags, 

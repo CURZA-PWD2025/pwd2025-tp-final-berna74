@@ -2,7 +2,6 @@
 <template>
   <div class="container">
     <h4>Categorías</h4>
-    <!-- renderizado del modulo Categorías, lista, create, update, mostrar una en particular-->
     <RouterView />
   </div>
 </template>

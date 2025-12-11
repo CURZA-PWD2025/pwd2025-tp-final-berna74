@@ -92,6 +92,9 @@ class CategoriaModel:
         cnx = ConectDB.get_connect()
         with cnx.cursor(dictionary=True) as cursor:
             try:
+                # Primero eliminar las relaciones con socios
+                cursor.execute("DELETE FROM SOCIO_CATEGORIA WHERE categoria_id = %s", (id,))
+                # Luego eliminar la categoría
                 cursor.execute("DELETE FROM CATEGORIAS WHERE id = %s", (id,))
                 result = cursor.rowcount
                 cnx.commit()

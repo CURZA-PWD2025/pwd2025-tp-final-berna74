@@ -1,7 +1,7 @@
 <template>
   <div class="modal-overlay" @click.self="$emit('close')">
     <div class="modal-content">
-      <h2>Nuevo Socio</h2>
+      <h2>Editar Socio</h2>
       <form @submit.prevent="handleSubmit">
         <div class="form-row">
           <div class="form-group">
@@ -17,7 +17,8 @@
         <div class="form-row">
           <div class="form-group">
             <label>DNI:*</label>
-            <input type="text" v-model="formData.dni" required />
+            <input type="text" v-model="formData.dni" required disabled />
+            <small>El DNI no se puede modificar</small>
           </div>
           <div class="form-group">
             <label>Teléfono:*</label>
@@ -31,8 +32,19 @@
         </div>
 
         <div class="form-group">
-          <label>Fecha de Inscripción:*</label>
-          <input type="date" v-model="formData.fecha_inscripcion" required />
+          <label>Dirección:</label>
+          <input type="text" v-model="formData.direccion" />
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label>Fecha de Nacimiento:</label>
+            <input type="date" v-model="formData.fecha_nacimiento" />
+          </div>
+          <div class="form-group">
+            <label>Fecha de Inscripción:*</label>
+            <input type="date" v-model="formData.fecha_inscripcion" required />
+          </div>
         </div>
 
         <div class="form-group">
@@ -87,7 +99,7 @@
 
         <div class="form-actions">
           <button type="submit" class="btn-submit" :disabled="submitLoading">
-            {{ submitLoading ? 'Guardando...' : 'Crear Socio' }}
+            {{ submitLoading ? 'Actualizando...' : 'Actualizar Socio' }}
           </button>
           <button type="button" class="btn-cancel" @click="$emit('close')">Cancelar</button>
         </div>
@@ -104,8 +116,13 @@ import { useSociosStore } from '@/stores/socios'
 import { useProfesoresStore } from '@/stores/profesores'
 import { useCategoriasStore } from '@/stores/categorias'
 import { storeToRefs } from 'pinia'
+import type { Socio } from '@/interfaces/Socio'
 
-const emit = defineEmits(['close', 'created'])
+const props = defineProps<{
+  socio: Socio
+}>()
+
+const emit = defineEmits(['close', 'updated'])
 const sociosStore = useSociosStore()
 const profesoresStore = useProfesoresStore()
 const categoriasStore = useCategoriasStore()
@@ -114,23 +131,28 @@ const { profesores } = storeToRefs(profesoresStore)
 const { categorias } = storeToRefs(categoriasStore)
 
 const formData = ref({
-  nombre: '',
-  apellido: '',
-  dni: '',
-  email: '',
-  telefono: '',
-  fecha_inscripcion: new Date().toISOString().split('T')[0],
-  profesor_id: null as number | null,
-  registra_deuda: false
+  nombre: props.socio.nombre,
+  apellido: props.socio.apellido,
+  dni: props.socio.dni,
+  email: props.socio.email,
+  telefono: props.socio.telefono,
+  direccion: props.socio.direccion || '',
+  fecha_nacimiento: props.socio.fecha_nacimiento || '',
+  fecha_inscripcion: props.socio.fecha_inscripcion,
+  profesor_id: props.socio.profesor_id || null,
+  registra_deuda: props.socio.registra_deuda === true
 })
 
-const selectedCategorias = ref<number[]>([])
+const selectedCategorias = ref<number[]>(
+  props.socio.categorias?.map(cat => cat.id).filter((id): id is number => id !== undefined) || []
+)
+
 const submitLoading = ref(false)
 const error = ref<string | null>(null)
 
-onMounted(() => {
-  profesoresStore.fetchProfesores()
-  categoriasStore.fetchCategorias()
+onMounted(async () => {
+  await profesoresStore.fetchProfesores()
+  await categoriasStore.fetchCategorias()
 })
 
 async function handleSubmit() {
@@ -138,16 +160,13 @@ async function handleSubmit() {
   error.value = null
   
   try {
-    const socioData = {
+    await sociosStore.updateSocio(props.socio.id, {
       ...formData.value,
-      categorias_ids: selectedCategorias.value
-    }
-    
-    await sociosStore.createSocio(socioData)
-    emit('created')
+      categorias: selectedCategorias.value
+    })
+    emit('updated')
   } catch (e: any) {
-    error.value = e.response?.data?.mensaje || 'Error al crear socio'
-    console.error('Error completo:', e)
+    error.value = e.response?.data?.mensaje || 'Error al actualizar socio'
   } finally {
     submitLoading.value = false
   }
@@ -208,11 +227,27 @@ input, select {
   font-size: 14px;
 }
 
+input:disabled {
+  background-color: #f5f5f5;
+  cursor: not-allowed;
+}
+
+small {
+  display: block;
+  color: #666;
+  font-size: 12px;
+  margin-top: 3px;
+}
+
 .checkbox-group {
   display: flex;
   flex-direction: column;
   gap: 8px;
-  margin-top: 5px;
+  padding: 10px;
+  border: 1px solid #CCCCCC;
+  border-radius: 4px;
+  max-height: 150px;
+  overflow-y: auto;
 }
 
 .checkbox-label {
@@ -231,10 +266,9 @@ input, select {
 .radio-group {
   display: flex;
   flex-direction: column;
-  gap: 8px;
-  margin-top: 5px;
+  gap: 10px;
   padding: 10px;
-  border: 1px solid #ddd;
+  border: 1px solid #CCCCCC;
   border-radius: 4px;
 }
 
@@ -244,8 +278,9 @@ input, select {
   gap: 8px;
   font-weight: normal;
   cursor: pointer;
-  padding: 5px;
+  padding: 8px;
   border-radius: 4px;
+  transition: background-color 0.2s ease;
 }
 
 .radio-label:hover {
@@ -255,6 +290,7 @@ input, select {
 .radio-label input[type="radio"] {
   width: auto;
   cursor: pointer;
+  margin: 0;
 }
 
 .form-actions {
@@ -263,22 +299,20 @@ input, select {
   margin-top: 20px;
 }
 
-.btn-submit, .btn-cancel {
+.btn-submit {
   flex: 1;
+  background-color: #022F9D;
+  color: white;
   padding: 10px;
   border: none;
   border-radius: 4px;
   cursor: pointer;
-  font-size: 14px;
-}
-
-.btn-submit {
-  background-color: #022F9D;
-  color: white;
+  transition: background-color 0.3s ease;
 }
 
 .btn-submit:hover:not(:disabled) {
   background-color: #00CDFF;
+  color: #000000;
 }
 
 .btn-submit:disabled {
@@ -287,8 +321,14 @@ input, select {
 }
 
 .btn-cancel {
+  flex: 1;
   background-color: #CCCCCC;
   color: #000000;
+  padding: 10px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
 }
 
 .btn-cancel:hover {
@@ -301,5 +341,16 @@ input, select {
   padding: 10px;
   background-color: #f8d7da;
   border-radius: 4px;
+}
+
+@media (max-width: 768px) {
+  .modal-content {
+    width: 95%;
+    padding: 20px;
+  }
+
+  .form-row {
+    grid-template-columns: 1fr;
+  }
 }
 </style>

@@ -2,7 +2,10 @@
   <div class="profesores-list">
     <div class="header">
       <h2>Lista de Profesores</h2>
-      <button @click="showCreateForm = true" class="btn-primary">Nuevo Profesor</button>
+      <button @click="showCreateForm = true" class="btn-primary">
+        <Icon icon="mdi:plus" width="20" height="20" />
+        Nuevo Profesor
+      </button>
     </div>
 
     <ProfesoresCreate v-if="showCreateForm" @close="showCreateForm = false" @created="handleCreated" />
@@ -16,7 +19,7 @@
             <th>ID</th>
             <th>Nombre</th>
             <th>Apellido</th>
-            <th>Especialidad</th>
+            <th>Horarios de clases</th>
             <th>Teléfono</th>
             <th>Email</th>
             <th>Acciones</th>
@@ -27,13 +30,19 @@
             <td>{{ profesor.id }}</td>
             <td>{{ profesor.nombre }}</td>
             <td>{{ profesor.apellido }}</td>
-            <td>{{ profesor.especialidad }}</td>
+            <td>{{ profesor.horarios_clases }}</td>
             <td>{{ profesor.telefono }}</td>
             <td>{{ profesor.email }}</td>
-            <td>
-              <button @click="viewProfesor(profesor.id)" class="btn-view">Ver</button>
-              <button @click="editProfesor(profesor.id)" class="btn-edit">Editar</button>
-              <button @click="confirmDelete(profesor.id)" class="btn-delete">Eliminar</button>
+            <td class="actions">
+              <button @click="viewProfesor(profesor.id)" class="btn-icon" title="Ver">
+                <Icon icon="mdi:eye" width="18" height="18" />
+              </button>
+              <button @click="editProfesor(profesor.id)" class="btn-icon" title="Editar">
+                <Icon icon="mdi:pencil" width="18" height="18" />
+              </button>
+              <button @click="confirmDelete(profesor.id)" class="btn-icon btn-delete" title="Eliminar">
+                <Icon icon="mdi:delete" width="18" height="18" />
+              </button>
             </td>
           </tr>
         </tbody>
@@ -47,6 +56,7 @@
 
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
+import { Icon } from '@iconify/vue'
 import { useProfesoresStore } from '@/stores/profesores'
 import { storeToRefs } from 'pinia'
 import ProfesoresCreate from './ProfesoresCreate.vue'
@@ -124,63 +134,49 @@ function handleUpdated() {
 }
 
 .btn-primary {
-  background-color: #022F9D;
-  color: #FFFFFF;
-  padding: 10px 20px;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
-}
-
-.btn-primary:hover {
-  background-color: #00CDFF;
-  color: #000000;
-}
-
-.btn-primary:hover {
-  background-color: #011f6b;
-}
-
-.btn-view {
-  background-color: #00CDFF;
-  color: #000000;
-  padding: 5px 10px;
-  border: none;
-  border-radius: 3px;
-  cursor: pointer;
-  margin-right: 5px;
-  transition: background-color 0.3s ease;
-}
-
-.btn-view:hover {
-  background-color: #022F9D;
-  color: #FFFFFF;
-}
-
-.btn-edit {
-  background-color: #FFCD00;
-  color: #000000;
-  padding: 5px 10px;
-  border: none;
-  border-radius: 3px;
-  cursor: pointer;
-  margin-right: 5px;
-  transition: background-color 0.3s ease;
-}
-
-.btn-edit:hover {
-  background-color: #022F9D;
-  color: #FFFFFF;
-}
-
-.btn-delete {
-  background-color: #f44336;
+  background: #00CDFF;
   color: white;
-  padding: 5px 10px;
   border: none;
-  border-radius: 3px;
+  padding: 0.75rem 1.5rem;
+  border-radius: 6px;
   cursor: pointer;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  transition: all 0.3s ease;
+}
+
+.btn-primary:hover {
+  background: #00B8E6;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 205, 255, 0.3);
+}
+
+.actions {
+  display: flex;
+  gap: 0.5rem;
+  justify-content: center;
+}
+
+.btn-icon {
+  background: none;
+  border: none;
+  padding: 0.5rem;
+  cursor: pointer;
+  color: #022F9D;
+  border-radius: 4px;
+  transition: all 0.3s ease;
+}
+
+.btn-icon:hover {
+  background: #e3f0fc;
+  color: #00CDFF;
+}
+
+.btn-delete:hover {
+  background: #ffebee;
+  color: #c62828;
 }
 
 .loading,

@@ -31,7 +31,7 @@ TABLES['PROFESORES'] = (
     "  `id` int(11) NOT NULL AUTO_INCREMENT,"
     "  `nombre` varchar(50) NOT NULL,"
     "  `apellido` varchar(50) NOT NULL,"
-    "  `especialidad` varchar(100) NOT NULL,"
+    "  `horarios_clases` varchar(100) NOT NULL,"
     "  `telefono` varchar(20) NOT NULL,"
     "  `email` varchar(100) NOT NULL,"
     "  PRIMARY KEY (`id`)"
@@ -47,9 +47,10 @@ TABLES['SOCIOS'] = (
     "  `email` varchar(100) NOT NULL,"
     "  `telefono` varchar(20) NOT NULL,"
     "  `fecha_inscripcion` DATE NOT NULL,"
-    "  `profesor_id` int(11) NOT NULL,"
+    "  `profesor_id` int(11) DEFAULT NULL,"
+    "  `registra_deuda` BOOLEAN DEFAULT FALSE,"
     "  PRIMARY KEY (`id`),"
-    "  FOREIGN KEY (`profesor_id`) REFERENCES PROFESORES(id)"
+    "  FOREIGN KEY (`profesor_id`) REFERENCES PROFESORES(id) ON DELETE SET NULL"
     ") "
 )
 
@@ -95,11 +96,11 @@ TABLES['ALUMNOS'] = (
     "  `email` varchar(100) NOT NULL,"
     "  `telefono` varchar(20) NOT NULL,"
     "  `fecha_inscripcion` DATE NOT NULL,"
-    "  `profesor_id` int(11) NOT NULL,"
+    "  `profesor_id` int(11) DEFAULT NULL,"
     "  `nivel` varchar(50),"
     "  `activo` BOOLEAN DEFAULT TRUE,"
     "  PRIMARY KEY (`id`),"
-    "  FOREIGN KEY (`profesor_id`) REFERENCES PROFESORES(id)"
+    "  FOREIGN KEY (`profesor_id`) REFERENCES PROFESORES(id) ON DELETE SET NULL"
     ") "
 )
 
@@ -136,7 +137,7 @@ SEEDS['CATEGORIAS'] = (
 )
 
 SEEDS['PROFESORES'] = (
-    "INSERT INTO PROFESORES (nombre, apellido, especialidad, telefono, email) "
+    "INSERT INTO PROFESORES (nombre, apellido, horarios_clases, telefono, email) "
     "VALUES (%s, %s, %s, %s, %s)",
     [
         ('Carlos', 'Rodríguez', 'Técnica de Saque y Volea', '1144556677', 'carlos.rodriguez@clubtenis.com'),

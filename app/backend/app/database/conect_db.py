@@ -26,7 +26,6 @@ class ConectDB:
         cxn = ConectDB.get_connect()
         try:
             with cxn.cursor(dictionary=True) as cursor:
-                print(params)
                 cursor.execute(sql, params)
                 result = cursor.fetchall()
                 return result if result else False
@@ -40,7 +39,6 @@ class ConectDB:
         cxn = ConectDB.get_connect()
         try:
             with cxn.cursor(dictionary=True) as cursor:
-                print(params)
                 cursor.execute(sql, params or ())
                 cxn.commit()
                 if cursor.lastrowid:

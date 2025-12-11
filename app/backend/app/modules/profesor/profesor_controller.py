@@ -11,7 +11,7 @@ class ProfesorController:
     def get_by_id(id):
         profesor = ProfesorModel.get_by_id(id)
         if profesor:
-            return jsonify(profesor.serializar()), 200
+            return jsonify(profesor), 200
         return jsonify({'mensaje': 'Profesor no encontrado'}), 404
 
     @staticmethod

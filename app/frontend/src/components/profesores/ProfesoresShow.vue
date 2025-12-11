@@ -10,8 +10,8 @@
         <div class="detail-row">
           <strong>Nombre:</strong> {{ profesor.nombre }} {{ profesor.apellido }}
         </div>
-        <div class="detail-row">
-          <strong>Especialidad:</strong> {{ profesor.especialidad }}
+        <div class="detail-item">
+          <strong>Horarios de clases:</strong> {{ profesor.horarios_clases }}
         </div>
         <div class="detail-row">
           <strong>Teléfono:</strong> {{ profesor.telefono }}

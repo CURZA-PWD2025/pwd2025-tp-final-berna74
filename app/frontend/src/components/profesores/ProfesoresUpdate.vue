@@ -15,8 +15,8 @@
         </div>
 
         <div class="form-group">
-          <label for="especialidad">Especialidad:</label>
-          <input v-model="form.especialidad" type="text" id="especialidad" required />
+          <label for="horarios_clases">Horarios de clases:</label>
+          <input v-model="form.horarios_clases" type="text" id="horarios_clases" placeholder="Ej: Lunes y Miércoles 10-12hs" required />
         </div>
 
         <div class="form-group">
@@ -52,7 +52,7 @@ const { profesor, loading } = storeToRefs(profesoresStore)
 const form = ref({
   nombre: '',
   apellido: '',
-  especialidad: '',
+  horarios_clases: '',
   telefono: '',
   email: ''
 })
@@ -66,7 +66,7 @@ watch(profesor, (newProfesor) => {
     form.value = {
       nombre: newProfesor.nombre,
       apellido: newProfesor.apellido,
-      especialidad: newProfesor.especialidad,
+      horarios_clases: newProfesor.horarios_clases,
       telefono: newProfesor.telefono,
       email: newProfesor.email
     }

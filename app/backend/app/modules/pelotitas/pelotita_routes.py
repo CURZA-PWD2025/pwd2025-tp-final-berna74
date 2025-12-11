@@ -8,4 +8,4 @@ pelotita_bp.route('/<int:pelotita_id>', methods=['GET'])(PelotitaController.show
 pelotita_bp.route('/', methods=['POST'])(PelotitaController.store)
 pelotita_bp.route('/<int:pelotita_id>', methods=['PUT'])(PelotitaController.update)
 pelotita_bp.route('/<int:pelotita_id>', methods=['DELETE'])(PelotitaController.destroy)
-pelotita_bp.route('/resumen', methods=['GET'])(PelotitaController.resumen)
+pelotita_bp.route('/resumen', methods=['GET'], strict_slashes=False)(PelotitaController.resumen)
